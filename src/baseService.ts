@@ -132,6 +132,8 @@ export class BaseService {
         try {
             response = await this._httpClient.sendRequest(config);
         } catch (err) {
+            console.log('sss',err);
+
             error = err;
             // @ts-ignore
             response = err.response;
