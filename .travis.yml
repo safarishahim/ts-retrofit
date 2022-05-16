@@ -19,12 +19,6 @@ jobs:
       script:
         - node --version
         - npm --version
-        - echo "Linting Started ..."
-        - npm run tslint
-        - echo "Linting Finished."
-        - echo "Testing Started ..."
-        - npm test
-        - echo "Testing Finished."
 
     - stage: publish
       if: tag IS present
