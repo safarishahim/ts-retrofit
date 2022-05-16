@@ -131,6 +131,8 @@ export class BaseService {
         let response;
         try {
             response = await this._httpClient.sendRequest(config);
+            console.log('response',response);
+
         } catch (err) {
             console.log('sss',err);
 
