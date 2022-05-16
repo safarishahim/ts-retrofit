@@ -454,7 +454,7 @@ export const GraphQLVariables = (target: any, methodName: string, paramIndex: nu
  * @param target
  * @param methodName
  * @param paramIndex
- * @sample @Signal post: Post
+ * @sample @Signal signal: Signal
  * @constructor
  */
 export const Signal = (target: any, methodName: string, paramIndex: number) => {

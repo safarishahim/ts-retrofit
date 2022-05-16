@@ -12,7 +12,7 @@
 ## Install
 
 ```bash
-$ npm i ts-retrofit
+$ npm i ts-retrofit3
 ```
 
 ## Quick Overview
@@ -20,7 +20,7 @@ $ npm i ts-retrofit
 Here is a typical service definition and usage:
 
 ```typescript
-import { GET, POST, PUT, PATCH, DELETE, BasePath, Header, Path, Body, BaseService, ServiceBuilder, Response } from "ts-retrofit";
+import { GET, POST, PUT, PATCH, DELETE, BasePath, Header, Path, Body, BaseService, ServiceBuilder, Response } from "ts-retrofit3";
 
 interface User {
   id?: number;
@@ -73,7 +73,7 @@ import {
   RequestInterceptorFunction,
   RequestInterceptor,
   ResponseInterceptor,
-} from "ts-retrofit";
+} from "ts-retrofit3";
 
 @BasePath("/api/v1")
 class ItemService extends BaseService {
