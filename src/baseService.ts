@@ -127,14 +127,29 @@ export class BaseService {
     private async _wrap(methodName: string, args: any[]): Promise<Response> {
         const {url, method, headers, query, data, signal} = this._resolveParameters(methodName, args);
         const config = this._makeConfig(methodName, url, method, headers, query, data, signal);
+        let error;
+        let response;
+        try {
+            response = await this._httpClient.sendRequest(config);
+            console.log(typeof response);
+            console.log('response',response);
 
-        return this._httpClient.sendRequest(config).then((response) => {
-            return response;
-        }).catch((err) => {
-            return err;
+        } catch (err) {
+            console.log('sss',err);
 
-        });
+            error = err;
+            // @ts-ignore
+            response = err.response;
+        }
+        if (this._logCallback) {
+            this._logCallback(config, response);
+        }
+        if (error) {
+            console.log('iseeror',error);
 
+            throw error;
+        }
+        return response;
     }
 
     @nonHTTPRequestMethod
@@ -160,7 +175,6 @@ export class BaseService {
             headers,
             params: query,
             data,
-            signal,
         };
         // response type
         if (this.__meta__[methodName].responseType) {
@@ -264,11 +278,11 @@ export class BaseService {
     @nonHTTPRequestMethod
     private _resolveSignal(methodName: string, args: any[]): any {
         const meta = this.__meta__;
-        const signalIndex = meta[methodName]?.signalIndex || {};
+        const signalIndex = meta[methodName]?.signalIndex;
         if (signalIndex >= 0) {
             return args[signalIndex];
         }
-        return null;
+        return undefined;
     }
 
     @nonHTTPRequestMethod
