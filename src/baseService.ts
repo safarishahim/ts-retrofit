@@ -144,6 +144,8 @@ export class BaseService {
             this._logCallback(config, response);
         }
         if (error) {
+            console.log('iseeror',error);
+
             throw error;
         }
         return response;
@@ -276,7 +278,7 @@ export class BaseService {
     @nonHTTPRequestMethod
     private _resolveSignal(methodName: string, args: any[]): any {
         const meta = this.__meta__;
-        const signalIndex = meta[methodName].signalIndex;
+        const signalIndex = meta[methodName]?.signalIndex || {};
         if (signalIndex >= 0) {
             return args[signalIndex];
         }
