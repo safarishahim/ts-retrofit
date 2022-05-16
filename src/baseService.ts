@@ -128,18 +128,15 @@ export class BaseService {
         const {url, method, headers, query, data, signal} = this._resolveParameters(methodName, args);
         const config = this._makeConfig(methodName, url, method, headers, query, data, signal);
         let error;
-        let response;
-        try {
-            response = await this._httpClient.sendRequest(config);
+        let response: any;
+
+            response = await this._httpClient.sendRequest(config).catch((err) => {
+                error = err;
+                // @ts-ignore
+                response = err.response;
+            });
             console.log('response',response);
 
-        } catch (err) {
-            console.log('sss',err);
-
-            error = err;
-            // @ts-ignore
-            response = err.response;
-        }
         if (this._logCallback) {
             this._logCallback(config, response);
         }
