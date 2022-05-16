@@ -127,25 +127,14 @@ export class BaseService {
     private async _wrap(methodName: string, args: any[]): Promise<Response> {
         const {url, method, headers, query, data, signal} = this._resolveParameters(methodName, args);
         const config = this._makeConfig(methodName, url, method, headers, query, data, signal);
-        let error;
-        let response: any;
 
-            response = await this._httpClient.sendRequest(config).catch((err) => {
-                error = err;
-                // @ts-ignore
-                response = err.response;
-            });
-            console.log('response',response);
+        return this._httpClient.sendRequest(config).then((response) => {
+            return response;
+        }).catch((err) => {
+            return err;
 
-        if (this._logCallback) {
-            this._logCallback(config, response);
-        }
-        if (error) {
-            console.log('iseeror',error);
+        });
 
-            throw error;
-        }
-        return response;
     }
 
     @nonHTTPRequestMethod
