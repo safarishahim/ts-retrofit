@@ -131,12 +131,10 @@ export class BaseService {
         let response;
         try {
             response = await this._httpClient.sendRequest(config);
-            console.log(typeof response);
-            console.log('response',response);
+            // @ts-ignore
+            if (response?.name === "AxiosError") throw response;
 
         } catch (err) {
-            console.log('sss',err);
-
             error = err;
             // @ts-ignore
             response = err.response;
@@ -145,8 +143,6 @@ export class BaseService {
             this._logCallback(config, response);
         }
         if (error) {
-            console.log('iseeror',error);
-
             throw error;
         }
         return response;
@@ -175,6 +171,7 @@ export class BaseService {
             headers,
             params: query,
             data,
+            signal,
         };
         // response type
         if (this.__meta__[methodName].responseType) {
@@ -278,11 +275,11 @@ export class BaseService {
     @nonHTTPRequestMethod
     private _resolveSignal(methodName: string, args: any[]): any {
         const meta = this.__meta__;
-        const signalIndex = meta[methodName]?.signalIndex;
+        const signalIndex = meta[methodName]?.signalIndex || {};
         if (signalIndex >= 0) {
             return args[signalIndex];
         }
-        return undefined;
+        return null;
     }
 
     @nonHTTPRequestMethod
