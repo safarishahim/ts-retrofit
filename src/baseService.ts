@@ -127,7 +127,6 @@ export class BaseService {
     private async _wrap(methodName: string, args: any[]): Promise<Response> {
         const {url, method, headers, query, data, signal, extraMap} = this._resolveParameters(methodName, args);
         const config = this._makeConfig(methodName, url, method, headers, query, data, signal);
-        console.log('lllllll', extraMap);
         let error;
         let response;
         try {
@@ -149,6 +148,7 @@ export class BaseService {
             this._logCallback(config, response);
         }
         if (error) {
+            console.log('now is error');
             throw error;
         }
         return response;
