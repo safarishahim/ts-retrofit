@@ -142,13 +142,14 @@ export class BaseService {
             error = err;
             // @ts-ignore
             response = err.response;
-            response.extraData = extraMap;
         }
         if (this._logCallback) {
             this._logCallback(config, response);
         }
         if (error) {
-            console.log('now is error');
+            // @ts-ignore
+            error.extraData = extraMap;
+
             throw error;
         }
         return response;
