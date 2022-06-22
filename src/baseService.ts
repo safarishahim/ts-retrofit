@@ -2,7 +2,7 @@ import axios, {AxiosRequestConfig, AxiosResponse, AxiosInstance} from "axios";
 import FormData from "form-data";
 import {DataResolverFactory} from "./dataResolver";
 import {HttpMethod} from "./constants";
-import {HttpMethodOptions} from "./decorators";
+import {ExtraMap, HttpMethodOptions} from "./decorators";
 import {isNode} from "./util";
 
 axios.defaults.withCredentials = true;
@@ -125,19 +125,24 @@ export class BaseService {
 
     @nonHTTPRequestMethod
     private async _wrap(methodName: string, args: any[]): Promise<Response> {
-        const {url, method, headers, query, data, signal} = this._resolveParameters(methodName, args);
+        const {url, method, headers, query, data, signal, extraMap} = this._resolveParameters(methodName, args);
         const config = this._makeConfig(methodName, url, method, headers, query, data, signal);
         let error;
         let response;
         try {
             response = await this._httpClient.sendRequest(config);
             // @ts-ignore
-            if (response?.name === "AxiosError") throw response;
+            response.extraData = extraMap;
+            // @ts-ignore
+            if (response?.name === "AxiosError") {
+                throw response;
+            }
 
         } catch (err) {
             error = err;
             // @ts-ignore
             response = err.response;
+            response.extraData = extraMap;
         }
         if (this._logCallback) {
             this._logCallback(config, response);
@@ -156,10 +161,11 @@ export class BaseService {
         const query = this._resolveQuery(methodName, args);
         const data = this._resolveData(methodName, headers, args);
         const signal = this._resolveSignal(methodName, args);
+        const extraMap = this._resolveExtraMap(methodName, args);
         if (headers["content-type"] && headers["content-type"].indexOf("multipart/form-data") !== -1 && isNode) {
             headers = {...headers, ...(data as FormData).getHeaders()};
         }
-        return {url, method, headers, query, data, signal};
+        return {url, method, headers, query, data, signal, extraMap};
     }
 
     @nonHTTPRequestMethod
@@ -278,6 +284,16 @@ export class BaseService {
         const signalIndex = meta[methodName]?.signalIndex || {};
         if (signalIndex >= 0) {
             return args[signalIndex];
+        }
+        return null;
+    }
+
+    @nonHTTPRequestMethod
+    private _resolveExtraMap(methodName: string, args: any[]): any {
+        const meta = this.__meta__;
+        const extraMapIndex = meta[methodName]?.extraMapIndex || {};
+        if (extraMapIndex >= 0) {
+            return args[extraMapIndex];
         }
         return null;
     }

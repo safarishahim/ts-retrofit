@@ -461,3 +461,17 @@ export const Signal = (target: any, methodName: string, paramIndex: number) => {
   ensureMeta(target, methodName);
   target.__meta__[methodName].signalIndex = paramIndex;
 };
+
+
+/**
+ * Set Extra data for API endpoint.
+ * @param target
+ * @param methodName
+ * @param paramIndex
+ * @sample @ExtraMap extra: Object
+ * @constructor
+ */
+export const ExtraMap = (target: any, methodName: string, paramIndex: number) => {
+  ensureMeta(target, methodName);
+  target.__meta__[methodName].extraMapIndex = paramIndex;
+};
