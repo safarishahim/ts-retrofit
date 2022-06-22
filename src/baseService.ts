@@ -2,12 +2,14 @@ import axios, {AxiosRequestConfig, AxiosResponse, AxiosInstance} from "axios";
 import FormData from "form-data";
 import {DataResolverFactory} from "./dataResolver";
 import {HttpMethod} from "./constants";
-import {ExtraMap, HttpMethodOptions} from "./decorators";
+import {HttpMethodOptions} from "./decorators";
 import {isNode} from "./util";
 
 axios.defaults.withCredentials = true;
 
-export type RequestConfig = AxiosRequestConfig;
+export interface RequestConfig extends AxiosRequestConfig{
+    extraMap?: Record<string, any>;
+}
 
 export interface Response<T = any> extends AxiosResponse<T> {
 }
@@ -126,13 +128,11 @@ export class BaseService {
     @nonHTTPRequestMethod
     private async _wrap(methodName: string, args: any[]): Promise<Response> {
         const {url, method, headers, query, data, signal, extraMap} = this._resolveParameters(methodName, args);
-        const config = this._makeConfig(methodName, url, method, headers, query, data, signal);
+        const config = this._makeConfig(methodName, url, method, headers, query, data, signal, extraMap);
         let error;
         let response;
         try {
             response = await this._httpClient.sendRequest(config);
-            // @ts-ignore
-            response.extraData = extraMap;
             // @ts-ignore
             if (response?.name === "AxiosError") {
                 throw response;
@@ -147,9 +147,6 @@ export class BaseService {
             this._logCallback(config, response);
         }
         if (error) {
-            // @ts-ignore
-            error.extraData = extraMap;
-
             throw error;
         }
         return response;
@@ -171,7 +168,7 @@ export class BaseService {
     }
 
     @nonHTTPRequestMethod
-    private _makeConfig(methodName: string, url: string, method: HttpMethod, headers: any, query: any, data: any, signal: any)
+    private _makeConfig(methodName: string, url: string, method: HttpMethod, headers: any, query: any, data: any, signal: any, extraMap: any)
         : RequestConfig {
         let config: RequestConfig = {
             url,
@@ -180,6 +177,7 @@ export class BaseService {
             params: query,
             data,
             signal,
+            extraMap,
         };
         // response type
         if (this.__meta__[methodName].responseType) {
@@ -195,6 +193,7 @@ export class BaseService {
         }
         // timeout
         config.timeout = this.__meta__[methodName].timeout || this._timeout;
+
         // mix in config set by @Config
         config = {
             ...config,
