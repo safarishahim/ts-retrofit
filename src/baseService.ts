@@ -132,8 +132,6 @@ export class BaseService {
         let error;
         let response;
         try {
-
-            throw 'hiii';
             response = await this._httpClient.sendRequest(config);
             // @ts-ignore
             if (response?.name === "AxiosError") {
