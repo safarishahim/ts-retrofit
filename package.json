@@ -1,6 +1,6 @@
 {
   "name": "ts-retrofit3",
-  "version": "1.17.5",
+  "version": "1.17.6",
   "description": "A declarative and axios based retrofit implementation for JavaScript and TypeScript.",
   "repository": "https://github.com/safarishahim/ts-retrofit",
   "main": "lib/index.js",
