@@ -131,6 +131,7 @@ export class BaseService {
         const config = this._makeConfig(methodName, url, method, headers, query, data, signal, extraMap);
         let error;
         let response;
+        debugger;
         try {
             response = await this._httpClient.sendRequest(config);
             // @ts-ignore
