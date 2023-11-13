@@ -16,11 +16,23 @@ interface Query {
 export interface PartDescriptor<T> {
   value: T;
   filename?: string;
+  contentType?: string;
 }
 
 export interface HttpMethodOptions {
   ignoreBasePath?: boolean;
 }
+
+// indices:  ?foo[0]=bar&foo[1]=qux
+// brackets: ?foo[]=bar&foo[]=qux
+// repeat:   ?foo=bar&foo=qux
+// comma:    ?foo=bar,qux
+export type QueryArrayFormat = "indices" | "brackets" | "repeat" | "comma";
+
+export interface QueryOptions {
+  arrayFormat?: QueryArrayFormat; // default is brackets
+}
+
 
 /**
  * Ensure the `__meta__` attribute is in the target object and `methodName` has been initialized.
@@ -217,6 +229,20 @@ export const HeaderMap = (target: any, methodName: string, paramIndex: number) =
   ensureMeta(target, methodName);
   target.__meta__[methodName].headerMapIndex = paramIndex;
 };
+
+/**
+ * Set array format for query
+ * @param queryArrayFormat
+ * @sample @QueryArrayFormat('repeat')
+ * @constructor
+ */
+export const QueryArrayFormat = (queryArrayFormat: QueryArrayFormat) => {
+  return (target: BaseService, methodName: string, descriptor: PropertyDescriptor) => {
+    ensureMeta(target, methodName);
+    target.__meta__[methodName].queryArrayFormat = queryArrayFormat;
+  };
+};
+
 
 /**
  * Set static query for API endpoint.
@@ -447,6 +473,20 @@ export const GraphQL = (query: string, operationName?: string) => {
 export const GraphQLVariables = (target: any, methodName: string, paramIndex: number) => {
   ensureMeta(target, methodName);
   target.__meta__[methodName].gqlVariablesIndex = paramIndex;
+};
+
+/**
+ * Mark method as deprecated
+ * @param hint
+ * @sample @Deprecated("This method is deprecated on version 2.0, please use xxx.")
+ * @constructor
+ */
+export const Deprecated = (hint?: string) => {
+  return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
+    ensureMeta(target, methodName);
+    target.__meta__[methodName].deprecated = true;
+    target.__meta__[methodName].deprecatedHint = hint;
+  };
 };
 
 /**

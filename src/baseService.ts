@@ -1,3 +1,4 @@
+import * as qs from "qs";
 import axios, {AxiosRequestConfig, AxiosResponse, AxiosInstance} from "axios";
 import FormData from "form-data";
 import {DataResolverFactory} from "./dataResolver";
@@ -193,6 +194,22 @@ export class BaseService {
         }
         // timeout
         config.timeout = this.__meta__[methodName].timeout || this._timeout;
+
+        // deprecated
+        if (this.__meta__[methodName].deprecated) {
+            let hint = `[warning] Deprecated method: "${methodName}". `;
+            if (this.__meta__[methodName].deprecatedHint) {
+                hint += this.__meta__[methodName].deprecatedHint;
+            }
+            // tslint:disable-next-line:no-console
+            console.warn(hint);
+        }
+        // query array format
+        if (this.__meta__[methodName].queryArrayFormat) {
+            config.paramsSerializer = (params: any): string => {
+                return qs.stringify(params, { arrayFormat: this.__meta__[methodName].queryArrayFormat});
+            };
+        }
 
         // mix in config set by @Config
         config = {
