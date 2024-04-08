@@ -502,7 +502,6 @@ export const Signal = (target: any, methodName: string, paramIndex: number) => {
   target.__meta__[methodName].signalIndex = paramIndex;
 };
 
-
 /**
  * Set Extra data for API endpoint.
  * @param target
@@ -514,4 +513,17 @@ export const Signal = (target: any, methodName: string, paramIndex: number) => {
 export const ExtraMap = (target: any, methodName: string, paramIndex: number) => {
   ensureMeta(target, methodName);
   target.__meta__[methodName].extraMapIndex = paramIndex;
+};
+
+/**
+ * Set Upload progress function for API endpoint.
+ * @param target
+ * @param methodName
+ * @param paramIndex
+ * @sample @OnUploadProgress OnUploadProgress: (event) => void
+ * @constructor
+ */
+export const OnUploadProgress = (target: any, methodName: string, paramIndex: number) => {
+  ensureMeta(target, methodName);
+  target.__meta__[methodName].onUploadProgressIndex = paramIndex;
 };

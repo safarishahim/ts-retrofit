@@ -128,8 +128,8 @@ export class BaseService {
 
     @nonHTTPRequestMethod
     private async _wrap(methodName: string, args: any[]): Promise<Response> {
-        const {url, method, headers, query, data, signal, extraMap} = this._resolveParameters(methodName, args);
-        const config = this._makeConfig(methodName, url, method, headers, query, data, signal, extraMap);
+        const {url, method, headers, query, data, signal, extraMap, onUploadProgress} = this._resolveParameters(methodName, args);
+        const config = this._makeConfig(methodName, url, method, headers, query, data, signal, extraMap, onUploadProgress);
         let error;
         let response;
         try {
@@ -162,14 +162,15 @@ export class BaseService {
         const data = this._resolveData(methodName, headers, args);
         const signal = this._resolveSignal(methodName, args);
         const extraMap = this._resolveExtraMap(methodName, args);
+        const onUploadProgress = this._resolveOnUploadProgress(methodName, args);
         if (headers["content-type"] && headers["content-type"].indexOf("multipart/form-data") !== -1 && isNode) {
             headers = {...headers, ...(data as FormData).getHeaders()};
         }
-        return {url, method, headers, query, data, signal, extraMap};
+        return {url, method, headers, query, data, signal, extraMap, onUploadProgress};
     }
 
     @nonHTTPRequestMethod
-    private _makeConfig(methodName: string, url: string, method: HttpMethod, headers: any, query: any, data: any, signal: any, extraMap: any)
+    private _makeConfig(methodName: string, url: string, method: HttpMethod, headers: any, query: any, data: any, signal: any, extraMap: any, onUploadProgress: any)
         : RequestConfig {
         let config: RequestConfig = {
             url,
@@ -179,6 +180,7 @@ export class BaseService {
             data,
             signal,
             extraMap,
+            onUploadProgress,
         };
         // response type
         if (this.__meta__[methodName].responseType) {
@@ -312,6 +314,16 @@ export class BaseService {
         const extraMapIndex = meta[methodName]?.extraMapIndex || {};
         if (extraMapIndex >= 0) {
             return args[extraMapIndex];
+        }
+        return null;
+    }
+
+    @nonHTTPRequestMethod
+    private _resolveOnUploadProgress(methodName: string, args: any[]): any {
+        const meta = this.__meta__;
+        const onUploadProgressIndex = meta[methodName]?.onUploadProgressIndex ?? (() => {});
+        if (onUploadProgressIndex) {
+            return args[onUploadProgressIndex];
         }
         return null;
     }
