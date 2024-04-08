@@ -180,7 +180,6 @@ export class BaseService {
             data,
             signal,
             extraMap,
-            onUploadProgress,
         };
         // response type
         if (this.__meta__[methodName].responseType) {
@@ -211,6 +210,10 @@ export class BaseService {
             config.paramsSerializer = (params: any): string => {
                 return qs.stringify(params, { arrayFormat: this.__meta__[methodName].queryArrayFormat});
             };
+        }
+
+        if (onUploadProgress){
+            config.onUploadProgress = onUploadProgress;
         }
 
         // mix in config set by @Config
@@ -321,8 +324,8 @@ export class BaseService {
     @nonHTTPRequestMethod
     private _resolveOnUploadProgress(methodName: string, args: any[]): any {
         const meta = this.__meta__;
-        const onUploadProgressIndex = meta[methodName]?.onUploadProgressIndex ?? (() => {});
-        if (onUploadProgressIndex) {
+        const onUploadProgressIndex = meta[methodName]?.onUploadProgressIndex ?? {};
+        if (onUploadProgressIndex > 0) {
             return args[onUploadProgressIndex];
         }
         return null;
