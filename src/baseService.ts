@@ -129,6 +129,7 @@ export class BaseService {
     @nonHTTPRequestMethod
     private async _wrap(methodName: string, args: any[]): Promise<Response> {
         const {url, method, headers, query, data, signal, extraMap, onUploadProgress} = this._resolveParameters(methodName, args);
+
         const config = this._makeConfig(methodName, url, method, headers, query, data, signal, extraMap, onUploadProgress);
         let error;
         let response;
@@ -160,9 +161,10 @@ export class BaseService {
         let headers = this._resolveHeaders(methodName, args);
         const query = this._resolveQuery(methodName, args);
         const data = this._resolveData(methodName, headers, args);
+        const onUploadProgress = this._resolveOnUploadProgress(methodName, args);
+
         const signal = this._resolveSignal(methodName, args);
         const extraMap = this._resolveExtraMap(methodName, args);
-        const onUploadProgress = this._resolveOnUploadProgress(methodName, args);
         if (headers["content-type"] && headers["content-type"].indexOf("multipart/form-data") !== -1 && isNode) {
             headers = {...headers, ...(data as FormData).getHeaders()};
         }
@@ -180,6 +182,7 @@ export class BaseService {
             data,
             signal,
             extraMap,
+            onUploadProgress,
         };
         // response type
         if (this.__meta__[methodName].responseType) {
@@ -212,8 +215,8 @@ export class BaseService {
             };
         }
 
-        if (onUploadProgress){
-            config.onUploadProgress = onUploadProgress;
+        if (this.__meta__[methodName].onUploadProgress) {
+            config.onUploadProgress = this.__meta__[methodName].onUploadProgress;
         }
 
         // mix in config set by @Config
@@ -342,6 +345,7 @@ export class BaseService {
         const gqlOperationName = meta[methodName].gqlOperationName;
         const gqlVariablesIndex = meta[methodName].gqlVariablesIndex;
 
+
         let data: any = {};
 
         // @Body
@@ -397,6 +401,7 @@ export class BaseService {
                 data.variables = args[gqlVariablesIndex];
             }
         }
+
 
         const contentType = headers["content-type"] || "application/json";
         const dataResolverFactory = new DataResolverFactory();

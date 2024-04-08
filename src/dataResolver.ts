@@ -53,7 +53,7 @@ export class MultiPartResolver extends BaseDataResolver {
         }
       } else {
         const options = this.getFormDataAppendOptions(data[key]);
-        formData.append(key, data[key].value, options);
+        formData.append(key, data[key].value);
       }
     }
     return formData;
