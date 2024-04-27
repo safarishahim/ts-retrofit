@@ -151,7 +151,7 @@ export class BaseService {
         if (error) {
             throw error;
         }
-        return response;
+        return {...response, extraMap};
     }
 
     @nonHTTPRequestMethod

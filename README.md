@@ -12,7 +12,8 @@
 ## Install
 
 ```bash
-$ npm i ts-retrofit3
+$ npm i  hamrah-player
+$ yarn add hamrah-player
 ```
 
 ## Quick Overview
