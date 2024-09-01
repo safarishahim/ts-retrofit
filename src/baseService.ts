@@ -289,14 +289,14 @@ export class BaseService {
         const query = meta[methodName].query || {};
         const queryParams = meta[methodName].queryParams;
         for (const pos in queryParams) {
-            if (queryParams[pos]) {
+            if (queryParams[pos] !== undefined && queryParams[pos] !== null) {
                 query[queryParams[pos]] = args[pos];
             }
         }
         const queryMapIndex = meta[methodName].queryMapIndex;
         if (queryMapIndex >= 0) {
             for (const key in args[queryMapIndex]) {
-                if (args[queryMapIndex][key]) {
+                if (args[queryMapIndex][key] !== undefined && args[queryMapIndex][key] !== null) {
                     query[key] = args[queryMapIndex][key];
                 }
             }
