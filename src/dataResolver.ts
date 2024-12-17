@@ -41,6 +41,9 @@ export class MultiPartResolver extends BaseDataResolver {
   public resolve(headers: any, data: any): any {
     const formData = new FormData();
     for (const key in data) {
+      if (data[key] === undefined) continue;
+
+
       if (Array.isArray(data[key])) {
         for (const element of data[key]) {
           const options = this.getFormDataAppendOptions(element);
